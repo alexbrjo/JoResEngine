@@ -39,9 +39,11 @@ function LevelCreator(){
                 if (ctrl.s) this.y += this.speed;
                 
                 var mouse = ctrl.current;
-                var cam = world.getCamera();
-                this.pos.x = Math.trunc((mouse.offsetX / 2 + cam.x) / world.getUniverse().tileSize);
-                this.pos.y = Math.trunc((mouse.offsetY / 2 + cam.y) / world.getUniverse().tileSize);
+                if (mouse !== null) {
+                    var cam = world.getCamera();
+                    this.pos.x = Math.trunc((mouse.offsetX / 2 + cam.x) / world.getUniverse().tileSize);
+                    this.pos.y = Math.trunc((mouse.offsetY / 2 + cam.y) / world.getUniverse().tileSize);
+                }
                 
                 if (ctrl.space) {
                     var fileData = LevelDataGenerator(world.getUniverse());

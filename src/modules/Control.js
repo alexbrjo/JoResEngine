@@ -47,7 +47,6 @@ function Control (canvas) {
 //       KeyEvent Listeners, MouseEvent Listeners                                     
 //
     /**
-     * 
      * @param {Number} which The char code of the key that is down
      * @param {Boolean} down If the key is down
      */
@@ -83,16 +82,25 @@ function Control (canvas) {
     };
     
     /**
-     * Sets all keys a to z to false. Sets enter to reset charString;
+     * Resets all key and mouse variables
      */
-    for (var i = 65; i <= 90; i++) {
-        this.setKey(i, false);
-        this.charString = "";
-    }
+    this.reset = function () {
+        for (var i = 65; i <= 90; i++) {
+            this.setKey(i, false);
+            this.charString = "";
+        }
+        
+        this.clickList = new Array(10);
+        this.isDown = false;
+        this.space = false;
+        this.shift = false;
+        this.enter = false;
+        this.delete = false;
+
+    };
     
     /**
      * Starts a click
-     * 
      * @param {MouseEvent} mouseEvent The mouse event from the HTML document
      */
     this.setMouseDown = function (mouseEvent) {
@@ -103,7 +111,6 @@ function Control (canvas) {
     
     /**
      * Ends a click
-     * 
      * @param {MouseEvent} mouseEvent The mouse event from the HTML document
      */
     this.setMouseUp = function (mouseEvent) {
@@ -112,7 +119,6 @@ function Control (canvas) {
     
     /**
      * Sets the position of the mouse
-     * 
      * @param {MouseEvent} mouseEvent The mouse event from the HTML document
      */
     this.setMouse = function (mouseEvent) {

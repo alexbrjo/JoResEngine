@@ -1,7 +1,7 @@
 /build
 /dist
-/test/JoResEngine.*
-/sample/JoResEngine.*
+/test/JoRes*
+/sample/JoRes*
 
 /nbproject
 /node_modules
