@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JoRes Game Creator</title>
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript" src="JoResEngine.js"></script>
+        <script type="text/javascript" src="JoResGameCreator.js"></script>
+    </head>
+    <body>
+        <div id="wrapper-creator" class="wrapper">
+            <canvas id="JoResGameCreator-target" width="600" height="400"></canvas>
+        </div>
+        <div id="wrapper-test" class="wrapper">
+            <canvas id="JoRes-target" width="600" height="400"></canvas>
+        </div>
+        
+        <script type="text/javascript" >
+            var $;
+            var _;
+            document.addEventListener("DOMContentLoaded", function(){
+                $ = new JoResEngine();
+                $.setLevelPath('rsc/SampleLevel*.js');
+                $.setImgPath('rsc/img/*.png');
+                $.start();
+                _ = new JoResGameCreator();
+                _.setLevelPath('rsc/SampleLevel*.js');
+                _.setImgPath('rsc/img/*.png');
+                _.start();
+            });
+        </script>
+    </body>
+</html>

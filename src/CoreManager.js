@@ -15,8 +15,9 @@
  * 
  * @param {Number} tileSize The pixel size of the square gird tiles 
  * @param {ResourceLoader} rsc 
+ * @param {String} target_canvas The id of the target canvas
  */  
-function CoreManager(tileSize, rsc){
+function CoreManager(tileSize, rsc, target_canvas){
     
     /** {Number} The height and width of the foreground tiles */
     this.tileSize = tileSize;
@@ -36,14 +37,14 @@ function CoreManager(tileSize, rsc){
     window.onresize = function () { c.zoomed = false; };
 
     /** {Graphics} */
-    this.graphics = new Graphics(this.camera);
+    this.graphics = new Graphics(this.camera, target_canvas);
     
     if (typeof DebugGraphics === "function") {
         this.graphics.enableDebug();
     }
 
     /** {Control} Keeps track of current user input */
-    this.controller = new Control();
+    this.controller = new Control(document.getElementById(target_canvas));
     
     /** The state change the application is requesting */
     this.applicationStateChange = null;

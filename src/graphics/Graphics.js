@@ -10,10 +10,10 @@
  * 
  * @param {Camera} camera What part of the level to paint.
  */
-var Graphics = function(camera) {
+var Graphics = function(camera, target_canvas) {
 
     /** canvas and context for the <canvas> displayed */  
-    var display = document.getElementById('JoRes-target');
+    var display = document.getElementById(target_canvas);
     var graphics = display.getContext('2d');
     
     /** canvas object to draw frame on */              

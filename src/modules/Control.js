@@ -1,7 +1,8 @@
 /**
  * Keeps user input up to date
+ * @param {Canvas} canvas The HTML canvas element to capture mouse events
  */
-function Control () {
+function Control (canvas) {
     
     /** The current mouse event */
     this.current = null;
@@ -115,6 +116,8 @@ function Control () {
      * @param {MouseEvent} mouseEvent The mouse event from the HTML document
      */
     this.setMouse = function (mouseEvent) {
+        window.onkeydown = function (keyEvent) { canvas.onkeydown(keyEvent); }
+        window.onkeyup = function (keyEvent) { canvas.onkeyup(keyEvent); }
         this.current = mouseEvent;
         this.isDown = mouseEvent.buttons > 0;
     };
@@ -123,9 +126,9 @@ function Control () {
      * Set key listener functions here
      */
     var t = this;
-    window.onkeydown = function (keyEvent) { t.setKey(keyEvent.which, true); };
-    window.onkeyup = function (keyEvent) { t.setKey(keyEvent.which, false); };
-    window.onmousedown = function (mouseEvent) { t.setMouseDown(mouseEvent); }; 
-    window.onmouseup = function (mouseEvent) { t.setMouseUp(mouseEvent); }; 
-    window.onmousemove = function (mouseEvent) { t.setMouse(mouseEvent); }; 
+    canvas.onkeydown = function (keyEvent) { t.setKey(keyEvent.which, true); };
+    canvas.onkeyup = function (keyEvent) { t.setKey(keyEvent.which, false); };
+    canvas.onmousedown = function (mouseEvent) { canvas.focus(); t.setMouseDown(mouseEvent); }; 
+    canvas.onmouseup = function (mouseEvent) { canvas.focus(); t.setMouseUp(mouseEvent); }; 
+    canvas.onmousemove = function (mouseEvent) { canvas.focus(); t.setMouse(mouseEvent); }; 
 }

@@ -1,14 +1,13 @@
 /**
  * The object that contains all the Application's data
  */
-function JoResEngine() {
+function JoResGameCreator() {
 
     /** The semi-global resourceLoader */
     this.rsc = new ResourceLoader();
     
     // Default Screens
     this.screens = {
-        mainMenu: JoResMainMenu,
         loading: JoResLoad,
         splash: JoResSplash,
         levelSelect: null,
@@ -41,19 +40,19 @@ function JoResEngine() {
      * Starts the main game loop using requestAnimationFrame
      */
     this.start = function () {
-        this.core = new CoreManager(16, joRes.rsc, "JoRes-target");
+        this.core = new CoreManager(16, joRes.rsc, "JoResGameCreator-target");
         this.core.update();
         
         var animationDone = false;
         var loadDone = false;
         
         this.rsc.whenReady(function () {
-            if (animationDone) joRes.screen("mainMenu");
+            if (animationDone) joRes.build(0);
             else loadDone = true;
         });
         
         this.screen("splash", function () {
-            if (loadDone) joRes.screen("mainMenu");
+            if (loadDone) joRes.build(0);
             else animationDone = true;
         });
         
@@ -86,7 +85,7 @@ function JoResEngine() {
      * 
      * @param {Number} level_id Which level to load.
      */
-    this.play = function (level_id) {
+    this.build = function (level_id) {
         
         this.core.close();
         this.screen("loading");
@@ -94,7 +93,7 @@ function JoResEngine() {
         //loads level data
         this.rsc.load(this.getLevelPath(level_id));
         this.rsc.whenReady(function () {
-            joRes.core.component = new Universe(joRes.unit_list);
+            joRes.core.component = new LevelCreator(joRes.unit_list);
             
             // loads level resource data
             joRes.rsc.load(joRes.core.component.resources);

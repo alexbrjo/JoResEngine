@@ -25,14 +25,6 @@ function JoResMainMenu() {
                     app.play(0); 
                 }
             ));
-                
-        buttons.push(new Button(
-                world.get("JoRes_build"), 
-                0, 10, null, null, "center", "center", 
-                function(app) { 
-                    app.levelCreator(0); 
-                }
-            ));
     };
     
         

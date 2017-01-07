@@ -5,51 +5,61 @@ module.exports = function (grunt) {
             options: {
                 separator: ';'
             },
-            all: {
-                src: ['build/**/*.js'],
+            engine: {
+                src: [ 'build/**/*.js', '!build/GameCreator/**/*.js' ],
                 dest: 'dist/JoResEngine.js'
             },
-            release: {
-                src: ['build/**/*.js', '!build/**/*.dev.js'],
-                dest: 'dist/JoResEngine.js'
+            gameCreator: {
+                src: [ 'build/GameCreator/**/*.js' ],
+                dest: 'dist/JoResGameCreator.js'
             }
         },
         copy:{
             build:{
                 cwd: 'src',
-                src: ['**'],
+                src: [ '**' ],
                 dest: 'build',
                 expand: true
             },
             test:{
                 cwd: 'dist',
-                src: ["JoResEngine.*"],
+                src: [ 'JoRes*.js' ],
                 dest: 'test',
                 expand: true
             },
             example:{
                 cwd: 'dist',
-                src: ["JoResEngine.*"],
+                src: [ 'JoResEngine*.js' ],
                 dest: 'sample',
+                expand: true
+            },
+            html:{
+                cwd: 'build/GameCreator',
+                src: [ '*.html', '*.css', '*.png' ],
+                dest: 'dist',
                 expand: true
             }
         },
         clean:{
             build:{
-                src:'build'
+                src: 'build'
             },
             test:{
-                src:'JoResEngine.*'
+                src: 'JoRes*'
             }
         },
         uglify: {
-            build: {
+            engine: {
                 files: {
                     'dist/JoResEngine.min.js': [ 'dist/JoResEngine.js' ]
                 }
+            },
+            gameCreator: {
+                files: {
+                    'dist/JoResGameCreator.min.js': [ 'dist/JoResGameCreator.js' ]
+                }
             }
         },
-        
         /**
          * Tests are currently running headless and therefore a complete 
          * instance of the app shouldn't be created
@@ -68,12 +78,17 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.registerTask(
         'build', 
-        'cleans, copys to build folder and uglifies', 
-        ['clean', 'copy:build', 'concat:all', 'uglify', 'copy:test', 'copy:example']
+        'builds the engine and game creator', 
+        ['build-engine', 'build-game-creator']
     );
     grunt.registerTask(
-        'build-release', 
-        'builds the app the same way but without developer features', 
-        ['clean', 'copy:build', 'concat:release', 'uglify', 'copy:test', 'copy:example']
+        'build-engine', 
+        'cleans, copys to build folder and uglifies', 
+        ['clean', 'copy:build', 'concat:engine', 'uglify:engine', 'copy:test', 'copy:example']
+    );
+    grunt.registerTask(
+        'build-game-creator', 
+        'cleans, copys to build folder and uglifies', 
+        ['clean', 'copy:build', 'concat:gameCreator', 'uglify:gameCreator', 'copy:html']
     );
 };
