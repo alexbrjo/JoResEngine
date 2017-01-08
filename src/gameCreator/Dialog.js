@@ -29,18 +29,18 @@ function Dialog (html_id) {
             de.joResDragClick.y = event.offsetY;
             de.joResDragClick.dragging = true;
             de.style.zindex = 3;
+            
+            window.onmousemove = function (event) {
+                if(de.joResDragClick.dragging){
+                    de.style.left = event.clientX - de.joResDragClick.x + "px";
+                    de.style.top = event.clientY - de.joResDragClick.y + "px";
+                } 
+            };
         };
 
         this.dragbarElement.onmouseup = function (event) {
             de.joResDragClick.dragging = false;
             de.style.zindex = 1;
-        };
-
-        this.dialogElement.onmousemove = function (event) {
-            if(de.joResDragClick.dragging){
-                de.style.left = event.clientX - de.joResDragClick.x + "px";
-                de.style.top = event.clientY - de.joResDragClick.y + "px";
-            } 
         };
 
         this.closeButtonElement.onclick = function (event) {

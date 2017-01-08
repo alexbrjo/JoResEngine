@@ -88,6 +88,13 @@ function Dialog (html_id) {
             de.joResDragClick.y = event.offsetY;
             de.joResDragClick.dragging = true;
             de.style.zindex = 3;
+            
+            window.onmousemove = function (event) {
+                if(de.joResDragClick.dragging){
+                    de.style.left = event.clientX - de.joResDragClick.x + "px";
+                    de.style.top = event.clientY - de.joResDragClick.y + "px";
+                } 
+            };
         };
 
         this.dragbarElement.onmouseup = function (event) {
@@ -95,12 +102,7 @@ function Dialog (html_id) {
             de.style.zindex = 1;
         };
 
-        this.dialogElement.onmousemove = function (event) {
-            if(de.joResDragClick.dragging){
-                de.style.left = event.clientX - de.joResDragClick.x + "px";
-                de.style.top = event.clientY - de.joResDragClick.y + "px";
-            } 
-        };
+        
 
         this.closeButtonElement.onclick = function (event) {
             de.style.display = "none";
@@ -361,10 +363,10 @@ function LevelCreatorNav () {
         dialogs[2] = new Dialog('selection_tools');
         dialogs[2].content = function(){};
         
-        dialogs[3] = new Dialog('size_alert');
+        
         if (document.body.clientHeight >= 600 && 
                 document.body.clientWidth >= 800) { 
-            dialogs[3].hide();
+            dialogs[3] = new Dialog('size_alert');
         }
         
         this.initAllDialogs(world, graphics);
@@ -373,6 +375,7 @@ function LevelCreatorNav () {
     this.initAllDialogs = function (world, graphics) {
         for (var i = 0; i < dialogs.length; i++) {
             dialogs[i].init(world, graphics);
+            dialogs[i].show();
         }
     };
 }
@@ -389,11 +392,11 @@ function BlockPalette (world){
     for (var i = 0; i < terrain.length; i++) {
         var sprite = terrain[i].sprite;
         var converted_image = document.createElement("canvas");
-        converted_image.width = sprite.w;
-        converted_image.height = sprite.h;
+        converted_image.width = 24;
+        converted_image.height = 24;
         converted_image.getContext("2d").drawImage(world.get(level.terrain_sprite),
             sprite.x * tileSize, sprite.y * tileSize, sprite.w, sprite.h, 
-            0, 0, sprite.w, sprite.h);
+            0, 0, converted_image.width, converted_image.height);
 
         var thi = this;
         this.buttons[i] = document.createElement('div');
@@ -426,21 +429,21 @@ function UnitPalette (world){
         }
         
         unit = Object.assign(new Unit(i, 0, 0), unit);
-        var sprite = unit.sprite(world.getClock());
+        var sprite = unit.sprite(world.getTime());
         
         var converted_image = document.createElement("canvas");
-        converted_image.width = sprite.w;
-        converted_image.height = sprite.h;
+        converted_image.width = 24;
+        converted_image.height = 24;
         converted_image.getContext("2d").drawImage(world.get(unit.imgPath),
             sprite.x, sprite.y, sprite.w, sprite.h, 
-            0, 0, sprite.w, sprite.h);
+            0, 0, converted_image.width, converted_image.height);
 
         var thi = this;
         this.buttons[i] = document.createElement('div');
         this.buttons[i].appendChild(converted_image);
-        this.buttons[i].joResBlockIndex = i;
+        this.buttons[i].joResUnitIndex = i;
         this.buttons[i].onclick = function (event) {
-            thi.selection = this.joResBlockIndex;
+            thi.selection = this.joResUnitIndex;
         };
         document.getElementById("unit_palette").children[1].appendChild(this.buttons[i]);
     }

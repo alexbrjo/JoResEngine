@@ -122,6 +122,7 @@ function Slice (a, w, h, world) {
      * @param {Universe} world The entire Universe
      */
     this.generateImage = function(world) {
+        ctx.clearRect(0, 0, this.image.width, this.image.height);
         for (var i = 0; i < this.w; i++) {
             for (var j = 0; j < this.h; j++) {
                 var block = lvl.generateBlockObject(ts * (i + this.x), ts * j);

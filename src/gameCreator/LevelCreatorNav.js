@@ -19,10 +19,10 @@ function LevelCreatorNav () {
         dialogs[2] = new Dialog('selection_tools');
         dialogs[2].content = function(){};
         
-        dialogs[3] = new Dialog('size_alert');
+        
         if (document.body.clientHeight >= 600 && 
                 document.body.clientWidth >= 800) { 
-            dialogs[3].hide();
+            dialogs[3] = new Dialog('size_alert');
         }
         
         this.initAllDialogs(world, graphics);
@@ -31,6 +31,7 @@ function LevelCreatorNav () {
     this.initAllDialogs = function (world, graphics) {
         for (var i = 0; i < dialogs.length; i++) {
             dialogs[i].init(world, graphics);
+            dialogs[i].show();
         }
     };
 }
