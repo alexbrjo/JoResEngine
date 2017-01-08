@@ -6,12 +6,12 @@ function LevelCreator(){
     
     universe.resources.push("button_1.png");
     
-    universe.hud = new LevelCreatorHUD();
+    universe.nav = new LevelCreatorNav();
     
     universe.init = function (world, graphics) {
-        this.hud.init(world, graphics, this.wizard);
+        this.nav.init(world, graphics, this.wizard);
         graphics.addTask(new LevelGraphics(world));
-        graphics.addTask(this.hud);
+        graphics.addTask(this.nav);
         graphics.disableDebug();
         
         world.getCamera().setFocusObj(this.wizard);
@@ -46,9 +46,13 @@ function LevelCreator(){
                 }
                 
                 if (ctrl.space) {
-                    var fileData = LevelDataGenerator(world.getUniverse());
-                    var file = document.getElementsByTagName('html');
-                    file[0].innerHTML = fileData;
+                    var exportWindow = window.open();
+                    exportWindow.document.open();
+                    exportWindow.document.write( "<html>" +
+                            DataGenerator(world.getUniverse()) + "</html>"
+                    );
+                    exportWindow.document.close();
+                    ctrl.space = false; // forces space to be false
                 }
                 
                 if (ctrl.isDown) {
@@ -63,7 +67,7 @@ function LevelCreator(){
      * @param {Universe} world The entire universe
      */
     universe.update = function(world){
-        this.hud.update(world, this.wizard);
+        this.nav.update(world, this.wizard);
         this.wizard.update(world);
     };
     

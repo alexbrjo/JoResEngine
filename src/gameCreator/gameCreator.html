@@ -15,11 +15,11 @@
                 <div class="menu_title">File</div>
                 <div class="menu_list">
                     <div class="menu_list_spacer"></div>
-                    <div class="menu_list_item"><a onclick="console.log('Export');">Export</a></div>
+                    <div id="button_1" class="menu_list_item">Export</div>
                     <div class="menu_list_spacer"></div>
-                    <div class="menu_list_item"><a onclick="console.log('Import');">Import</a></div>
+                    <div id="button_1" class="menu_list_item">Import</div>
                     <div class="menu_list_spacer"></div>
-                    <div class="menu_list_item"><a onclick="console.log('Test');">Test</a></div>
+                    <div id="button_1" class="menu_list_item">Test</div>
                     <div class="menu_list_spacer"></div>
                 </div>
             </div>
@@ -54,14 +54,14 @@
                 </div>
             </div>
         </div>
-        <div id="toolbox">
+        <div id="draggable_windows">
             <div id="block_palette" class="window">
                 <div class="window_menu">
                     <div class="window_close">x</div>
                     <div class="window_title">Block Palette</div>
                 </div>
                 <div class="window_content">
-                    <canvas id="block_palette_canvas"></canvas>
+                    <canvas id="block_palette_canvas" width="250" height="300"></canvas>
                 </div>
             </div>
             <div id="unit_palette" class="window">
@@ -70,7 +70,7 @@
                     <div class="window_title">Unit Palette</div>
                 </div>
                 <div class="window_content">
-                    <canvas id="units_palette_canvas"></canvas>
+                    <canvas id="units_palette_canvas" width="250" height="300"></canvas>
                 </div>
             </div>
             <div id="selection_tools" class="window">
@@ -79,13 +79,25 @@
                     <div class="window_title">Tools</div>
                 </div>
                 <div class="window_content">
-                    <canvas id="tools_canvas"></canvas>
+                    <canvas id="tools_canvas" width="100" height="300"></canvas>
+                </div>
+            </div>
+            <div id="size_alert" class="window">
+                <div class="window_menu">
+                    <div class="window_close">x</div>
+                    <div class="window_title">Warning</div>
+                </div>
+                <div class="window_content">
+                    You are using a window smaller than what JoRes GameCreator is optimized for (800x600)
                 </div>
             </div>
         </div>
         <canvas id="JoResGameCreator-target"></canvas>
         <script type="text/javascript" >
-            var _;
+            var joRes = {
+                domInput:'',
+                
+            };
             document.addEventListener("DOMContentLoaded", function(){
                 _ = new JoResGameCreator();
                 _.setLevelPath('rsc/SampleLevel*.js');

@@ -1,7 +1,6 @@
 /**
  * The graphics for the terrian, units and entities. Divides up the level into 
  * slices to optimize drawing terrain.
- * 
  * @param {Universe} world The entire universe
  */
 function LevelGraphics (world) {
@@ -16,7 +15,6 @@ function LevelGraphics (world) {
     
     /**
      * Prints the level
-     * 
      * @param {Universe} world The entire Universe
      * @param {RenderingContext2D} c The context to draw on
      */
@@ -27,22 +25,25 @@ function LevelGraphics (world) {
     };
     
     /**
-     * Responsible for printing all objects in the Unit queue
-     * 
+     * Prints the background image
+     * @Todo:
+     *      + Add static/2.5D background support
      * @param {Universe} world The entire universe
      * @param {RenderingContext2D} c The context to draw graphics
      */
     this.printBackground = function(world, c) { 
         for (var i = 0; i < 3; i++) {
-            c.drawImage(world.get("bg.png"),
-                0, 0, 240, 240,
-                i * 240, -50, 240, 240);
+            for (var j = 0; j < 2; j++) {
+                var bg_image = world.get("bg.png")
+                c.drawImage(bg_image,
+                    0, 0, bg_image.width, bg_image.height,
+                    i * bg_image.width, j * bg_image.width, bg_image.width, bg_image.height);
+            }
         }
     };
     
     /**
      * Prints all units in the Unit queue
-     * 
      * @param {Universe} world The entire universe
      * @param {RenderingContext2D} c The context to draw graphics
      */
@@ -78,7 +79,6 @@ function LevelGraphics (world) {
 /**
  * A slice of the world. Generates image for the slice to limit number of images
  * drawn per second.
- * 
  * @param {Number} a The slice id, also the 'slices' array idex
  * @param {Number} w Width of the slice
  * @param {Number} h Height of the slice
@@ -119,7 +119,6 @@ function Slice (a, w, h, world) {
     
     /**
      * Generates the slice image
-     * 
      * @param {Universe} world The entire Universe
      */
     this.generateImage = function(world) {

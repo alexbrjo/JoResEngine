@@ -6,7 +6,7 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             engine: {
-                src: [ 'build/**/*.js', '!build/GameCreator/**/*.js' ],
+                src: [ 'build/engine/**/*.js' ],
                 dest: 'dist/JoResEngine.js'
             },
             gameCreator: {

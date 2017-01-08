@@ -13,10 +13,18 @@ function initWindows () {
     var toolWindow = document.getElementById('selection_tools');
     var toolButton = toolWindow.children[0];
     var toolClose  = toolButton.children[0];
+    
+    var alertWindow = document.getElementById('size_alert');
+    var alertButton = alertWindow.children[0];
+    var alertClose  = alertButton.children[0];
 
     initWindow(blockWindow, blockButton, blockClose);
     initWindow(unitWindow,  unitButton,  unitClose);
     initWindow(toolWindow,  toolButton,  toolClose);
+    if (document.body.clientHeight < 600 || document.body.clientWidth < 800) { 
+        initWindow(alertWindow, alertButton, alertClose);
+        alertWindow.style.display = "block";
+    }
 }
 
 /**

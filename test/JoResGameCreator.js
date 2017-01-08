@@ -1,4 +1,63 @@
 /**
+ * Generates levelData from a level object
+ * 
+ * @param {Level} level Level to generate data for.
+ */
+function DataGenerator (level) {
+    var file = "var JoResLevel = function () {";
+    
+    // Prints width and height variables
+    file += "this.w = " + level.data.length + "; ";
+    file += "this.h = " + level.data[0].length + "; ";
+    
+    // Prints tileSize variable
+    file += "this.tileSize = " + level.tileSize + "; ";
+
+    file += "this.terrain_sprite =" + level.terrain_sprite + "; ";
+    
+    // Prints resources list
+    file += "this.resources = [";
+    for (var i = 0; i < level.resources.length; i++) {
+        file += level.resources[i];
+        if (i !== level.resources.length - 1) file += ",";
+    }
+    file += "]; ";
+    
+    // Prints the sprite list
+    file += "this.sprite_index = [";
+    for (var i = 0; i < level.sprite_index.length; i++) {
+        var s = level.sprite_index[i];
+        file += "{sprite:{x:" + s.sprite.x + ",y:" + s.sprite.y; 
+        file += ",w:" + s.sprite.w + ",h:" + s.sprite.h + "},"; 
+        file += "AABB:{x:" + s.AABB.x + ",y:" + s.AABB.y; 
+        file += ",w:" + s.AABB.w + ",h:" + s.AABB.h + "}"; 
+        file += "}";
+        if (i !== level.sprite_index.length - 1) file += ",";
+    }
+    file += "]; ";
+    
+    // Prints level.data
+    file += "this.data = [\n";
+    for (var i = 0; i < level.data.length; i++) {
+        file += "\t[";
+        for (var j = 0; j < level.data[i].length; j++) {
+            file += "\t\t[";
+            for (var k = 0; k < level.data[i][j].length; k++) {
+                file += level.data[i][j][k];
+                if (k !== level.data[i][j].length - 1) file += ",";
+            }
+            file += "]";
+            if (j !== level.data[i].length - 1) file += ",";
+            file += "\n";
+        }
+        file += "]";
+        if (i !== level.data.length - 1) file += ",";
+        file += "\n";
+    }
+    file += "]; ";
+    
+    return file + "}";
+};/**
  * Sets up mouse events to move palette and tool windows
  */
 function initWindows () {
@@ -13,10 +72,18 @@ function initWindows () {
     var toolWindow = document.getElementById('selection_tools');
     var toolButton = toolWindow.children[0];
     var toolClose  = toolButton.children[0];
+    
+    var alertWindow = document.getElementById('size_alert');
+    var alertButton = alertWindow.children[0];
+    var alertClose  = alertButton.children[0];
 
     initWindow(blockWindow, blockButton, blockClose);
     initWindow(unitWindow,  unitButton,  unitClose);
     initWindow(toolWindow,  toolButton,  toolClose);
+    if (document.body.clientHeight < 600 || document.body.clientWidth < 800) { 
+        initWindow(alertWindow, alertButton, alertClose);
+        alertWindow.style.display = "block";
+    }
 }
 
 /**
@@ -209,12 +276,12 @@ function LevelCreator(){
     
     universe.resources.push("button_1.png");
     
-    universe.hud = new LevelCreatorHUD();
+    universe.nav = new LevelCreatorNav();
     
     universe.init = function (world, graphics) {
-        this.hud.init(world, graphics, this.wizard);
+        this.nav.init(world, graphics, this.wizard);
         graphics.addTask(new LevelGraphics(world));
-        graphics.addTask(this.hud);
+        graphics.addTask(this.nav);
         graphics.disableDebug();
         
         world.getCamera().setFocusObj(this.wizard);
@@ -249,9 +316,13 @@ function LevelCreator(){
                 }
                 
                 if (ctrl.space) {
-                    var fileData = LevelDataGenerator(world.getUniverse());
-                    var file = document.getElementsByTagName('html');
-                    file[0].innerHTML = fileData;
+                    var exportWindow = window.open();
+                    exportWindow.document.open();
+                    exportWindow.document.write( "<html>" +
+                            DataGenerator(world.getUniverse()) + "</html>"
+                    );
+                    exportWindow.document.close();
+                    ctrl.space = false; // forces space to be false
                 }
                 
                 if (ctrl.isDown) {
@@ -266,16 +337,16 @@ function LevelCreator(){
      * @param {Universe} world The entire universe
      */
     universe.update = function(world){
-        this.hud.update(world, this.wizard);
+        this.nav.update(world, this.wizard);
         this.wizard.update(world);
     };
     
     return universe;
 }
     ;/**
- * The Heads up display for the LevelCreator
+ * The havigation display for the LevelCreator
  */
-function LevelCreatorHUD () {
+function LevelCreatorNav () {
     
     var buttons = [];
     
@@ -344,63 +415,11 @@ function LevelCreatorHUD () {
         }
     };
 }
-;/**
- * Generates levelData from a level object
- * 
- * @param {Level} level Level to generate data for.
- */
-function LevelDataGenerator (level) {
-    var file = "var JoResLevel = function () {";
+;function PaletteGraphics (){
     
-    // Prints width and height variables
-    file += "this.w = " + level.data.length + "; ";
-    file += "this.h = " + level.data[0].length + "; ";
+    /** Array of palette selection */
+    var selection = []; 
     
-    // Prints tileSize variable
-    file += "this.tileSize = " + level.tileSize + "; ";
-
-    file += "this.terrain_sprite =" + level.terrain_sprite + "; ";
-    
-    // Prints resources list
-    file += "this.resources = [";
-    for (var i = 0; i < level.resources.length; i++) {
-        file += level.resources[i];
-        if (i !== level.resources.length - 1) file += ",";
-    }
-    file += "]; ";
-    
-    // Prints the sprite list
-    file += "this.sprite_index = [";
-    for (var i = 0; i < level.sprite_index.length; i++) {
-        var s = level.sprite_index[i];
-        file += "{sprite:{x:" + s.sprite.x + ",y:" + s.sprite.y; 
-        file += ",w:" + s.sprite.w + ",h:" + s.sprite.h + "},"; 
-        file += "AABB:{x:" + s.AABB.x + ",y:" + s.AABB.y; 
-        file += ",w:" + s.AABB.w + ",h:" + s.AABB.h + "}"; 
-        file += "}";
-        if (i !== level.sprite_index.length - 1) file += ",";
-    }
-    file += "]; ";
-    
-    // Prints level.data
-    file += "this.data = [\n";
-    for (var i = 0; i < level.data.length; i++) {
-        file += "\t[";
-        for (var j = 0; j < level.data[i].length; j++) {
-            file += "\t\t[";
-            for (var k = 0; k < level.data[i][j].length; k++) {
-                file += level.data[i][j][k];
-                if (k !== level.data[i][j].length - 1) file += ",";
-            }
-            file += "]";
-            if (j !== level.data[i].length - 1) file += ",";
-            file += "\n";
-        }
-        file += "]";
-        if (i !== level.data.length - 1) file += ",";
-        file += "\n";
-    }
-    file += "]; ";
-    
-    return file + "}";
+    /** */
 }
+

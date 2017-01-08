@@ -3,7 +3,7 @@
  * 
  * @param {Level} level Level to generate data for.
  */
-function LevelDataGenerator (level) {
+function DataGenerator (level) {
     var file = "var JoResLevel = function () {";
     
     // Prints width and height variables
