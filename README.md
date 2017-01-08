@@ -1,6 +1,13 @@
 JoRes Game Engine
 ==================================================
-A personal HTML5 canvas Game Engine for simple 2D platformers. 
+Ever since I started coding, I've been making games. Most of my projects would 
+start with me reprogramming these game components:
+1. Collision detection
+2. Level data structure, almost always block-based
+3. Basic application flow
+So instead of programming these same components over and over I've condensed 
+them into my own game engine and level designer so I can focus on programming
+the unique parts of these games.
 
 Try out the sample game
 --------------------------

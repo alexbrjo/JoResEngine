@@ -7,36 +7,93 @@
         <script type="text/javascript" src="JoResGameCreator.js"></script>
     </head>
     <body>
-        <div id="wrapper-creator" class="wrapper">
-            <div id="toprow">
-                <div id="creator-canvas-wrapper">
-                    <canvas id="JoResGameCreator-target"></canvas>
+        <div id="menu">
+            <div class="menu_logo">
+                <div class="menu_title"><span style="color: red;">Jo</span>Res</div>
+            </div>
+            <div class="menu_item">
+                <div class="menu_title">File</div>
+                <div class="menu_list">
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Export');">Export</a></div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Import');">Import</a></div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Test');">Test</a></div>
+                    <div class="menu_list_spacer"></div>
                 </div>
-                <div id="block-palette"></div>
             </div>
-            <div id="bottomrow">
-                <div id="unit-palette"></div>
-                <div id="square-spacer"></div>
+            <div class="menu_item">
+                <div class="menu_title">Edit</div>
+                <div class="menu_list">
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Level Settings');">Level Settings</a></div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Units');">Units</a></div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item"><a onclick="console.log('Block');">Block</a></div>
+                    <div class="menu_list_spacer"></div>
+                </div>
+            </div>
+            <div class="menu_item">
+                <div class="menu_title">Windows</div>
+                <div class="menu_list">
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item">
+                        <a onclick="document.getElementById('block_palette').style.display = 'block';">Block palette</a>
+                    </div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item">
+                        <a onclick="document.getElementById('unit_palette').style.display = 'block';">Unit palette</a>
+                    </div>
+                    <div class="menu_list_spacer"></div>
+                    <div class="menu_list_item">
+                        <a onclick="document.getElementById('selection_tools').style.display = 'block';">Selection tools</a>
+                    </div>
+                    <div class="menu_list_spacer"></div>
+                </div>
             </div>
         </div>
-        <div id="wrapper-test" class="wrapper">
-            <div id="test-canvas-wrapper">
-                <canvas id="JoRes-target"></canvas>
+        <div id="toolbox">
+            <div id="block_palette" class="window">
+                <div class="window_menu">
+                    <div class="window_close">x</div>
+                    <div class="window_title">Block Palette</div>
+                </div>
+                <div class="window_content">
+                    <canvas id="block_palette_canvas"></canvas>
+                </div>
+            </div>
+            <div id="unit_palette" class="window">
+                <div class="window_menu">
+                    <div class="window_close">x</div>
+                    <div class="window_title">Unit Palette</div>
+                </div>
+                <div class="window_content">
+                    <canvas id="units_palette_canvas"></canvas>
+                </div>
+            </div>
+            <div id="selection_tools" class="window">
+                <div class="window_menu">
+                    <div class="window_close">x</div>
+                    <div class="window_title">Tools</div>
+                </div>
+                <div class="window_content">
+                    <canvas id="tools_canvas"></canvas>
+                </div>
             </div>
         </div>
-        
+        <canvas id="JoResGameCreator-target"></canvas>
         <script type="text/javascript" >
-            var $;
             var _;
             document.addEventListener("DOMContentLoaded", function(){
-                $ = new JoResEngine();
-                $.setLevelPath('rsc/SampleLevel*.js');
-                $.setImgPath('rsc/img/*.png');
-                $.start();
                 _ = new JoResGameCreator();
                 _.setLevelPath('rsc/SampleLevel*.js');
                 _.setImgPath('rsc/img/*.png');
                 _.start();
+                
+                //This needs to be integrated into LevelCreatorHUD.js
+                initWindows();
             });
         </script>
     </body>
