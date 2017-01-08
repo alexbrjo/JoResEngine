@@ -151,6 +151,21 @@ canvas {
     height: 100px;
 }
 
-#size_alert .window_content {
-    padding: 10px;
+.window_content {
+    padding: 3px;
+}
+
+.window_content div {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+    border: solid 1px transparent;
+}
+
+.window_content div:hover {
+    border: solid 1px black;
 }

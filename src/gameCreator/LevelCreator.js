@@ -4,14 +4,11 @@
 function LevelCreator(){
     var universe = new Universe();
     
-    universe.resources.push("button_1.png");
-    
     universe.nav = new LevelCreatorNav();
     
     universe.init = function (world, graphics) {
-        this.nav.init(world, graphics, this.wizard);
+        this.nav.init(world, graphics);
         graphics.addTask(new LevelGraphics(world));
-        graphics.addTask(this.nav);
         graphics.disableDebug();
         
         world.getCamera().setFocusObj(this.wizard);
@@ -30,7 +27,6 @@ function LevelCreator(){
             y: 0,
             pos : {x: 0, y:0},
             speed: 2,
-            brush: 0,
             update: function (world) {
                 var ctrl = world.getController();
                 if (ctrl.a) this.x -= this.speed;
@@ -56,18 +52,17 @@ function LevelCreator(){
                 }
                 
                 if (ctrl.isDown) {
-                    world.getUniverse().setBlock(this.pos.x, this.pos.y, this.brush);
+                    world.getUniverse().setBlock(this.pos.x, this.pos.y, 
+                            universe.nav.blockBrush());
                 }
             }
         };
     
     /**
      * The main game loop. Called dt/1000 times a second.
-     * 
      * @param {Universe} world The entire universe
      */
     universe.update = function(world){
-        this.nav.update(world, this.wizard);
         this.wizard.update(world);
     };
     

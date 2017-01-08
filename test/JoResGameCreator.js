@@ -58,71 +58,73 @@ function DataGenerator (level) {
     
     return file + "}";
 };/**
- * Sets up mouse events to move palette and tool windows
+ * Impementation of a window. Can be minimized, closed, dragged and opened from
+ * the navbar.
+ * @param {String} html_id Id of the dialog element
  */
-function initWindows () {
-    var blockWindow = document.getElementById('block_palette');
-    var blockButton = blockWindow.children[0];
-    var blockClose  = blockButton.children[0];
+function Dialog (html_id) {
+    this.dialogElement = document.getElementById(html_id);
+    this.dragbarElement = this.dialogElement.children[0];
+    this.closeButtonElement = this.dragbarElement.children[0];
     
-    var unitWindow = document.getElementById('unit_palette');
-    var unitButton = unitWindow.children[0];
-    var unitClose  = unitButton.children[0];
+    this.content = function(){};
     
-    var toolWindow = document.getElementById('selection_tools');
-    var toolButton = toolWindow.children[0];
-    var toolClose  = toolButton.children[0];
+    this.buttons = [];
     
-    var alertWindow = document.getElementById('size_alert');
-    var alertButton = alertWindow.children[0];
-    var alertClose  = alertButton.children[0];
+    this.selection = 0;
+    
+    this.init = function (world, graphics) {
+        this.content(world, graphics);
+    };
+    
+    this.dialogElement.joResDragClick = { x: 0, y: 0, dragging: false };
+    
+    this.setMouseEvents = function () {
+        
+        var de = this.dialogElement;
+        
+        this.dragbarElement.onmousedown = function (event) {
+            de.joResDragClick.x = event.offsetX;
+            de.joResDragClick.y = event.offsetY;
+            de.joResDragClick.dragging = true;
+            de.style.zindex = 3;
+        };
 
-    initWindow(blockWindow, blockButton, blockClose);
-    initWindow(unitWindow,  unitButton,  unitClose);
-    initWindow(toolWindow,  toolButton,  toolClose);
-    if (document.body.clientHeight < 600 || document.body.clientWidth < 800) { 
-        initWindow(alertWindow, alertButton, alertClose);
-        alertWindow.style.display = "block";
-    }
-}
+        this.dragbarElement.onmouseup = function (event) {
+            de.joResDragClick.dragging = false;
+            de.style.zindex = 1;
+        };
 
-/**
- * Sets up the mouse event functions for the HTML windows and bars
- * @param {HTML element} w The HTML element for the entire window 
- * @param {HTML element} b The menu bar on the window
- * @param {HTML element} c The close window button on the window
- */
-function initWindow (w, b, c) {
-    // Add a simple object for JoRes to access
-    w.joRes = {
-        x: 0,
-        y: 0,
-        dragging: false
+        this.dialogElement.onmousemove = function (event) {
+            if(de.joResDragClick.dragging){
+                de.style.left = event.clientX - de.joResDragClick.x + "px";
+                de.style.top = event.clientY - de.joResDragClick.y + "px";
+            } 
+        };
+
+        this.closeButtonElement.onclick = function (event) {
+            de.style.display = "none";
+        };
+        
+    };
+    this.setMouseEvents();
+    
+    this.minimize = function () {
+        
     };
     
-    b.onmousedown = function (event) {
-        w.joRes.x = event.offsetX;
-        w.joRes.y = event.offsetY;
-        w.joRes.dragging = true;
-        w.style.zindex = 3;
+    this.maximize = function () {
+        
     };
     
-    w.onmouseup = function (event) {
-        w.joRes.dragging = false;
-        w.style.zindex = 1;
+    this.show = function () {
+        this.dialogElement.style.display = "block";
     };
     
-    w.onmousemove = function (event) {
-        if(w.joRes.dragging){
-            w.style.left = event.clientX - w.joRes.x + "px";
-            w.style.top = event.clientY - w.joRes.y + "px";
-        } 
+    this.hide = function () {
+        this.dialogElement.style.display = "none";
     };
-    
-    c.onclick = function (event) {
-        w.style.display = "none";
-    };
-}
+} 
 ;/**
  * The object that contains all the Application's data
  */
@@ -274,14 +276,11 @@ function JoResGameCreator() {
 function LevelCreator(){
     var universe = new Universe();
     
-    universe.resources.push("button_1.png");
-    
     universe.nav = new LevelCreatorNav();
     
     universe.init = function (world, graphics) {
-        this.nav.init(world, graphics, this.wizard);
+        this.nav.init(world, graphics);
         graphics.addTask(new LevelGraphics(world));
-        graphics.addTask(this.nav);
         graphics.disableDebug();
         
         world.getCamera().setFocusObj(this.wizard);
@@ -300,7 +299,6 @@ function LevelCreator(){
             y: 0,
             pos : {x: 0, y:0},
             speed: 2,
-            brush: 0,
             update: function (world) {
                 var ctrl = world.getController();
                 if (ctrl.a) this.x -= this.speed;
@@ -326,18 +324,17 @@ function LevelCreator(){
                 }
                 
                 if (ctrl.isDown) {
-                    world.getUniverse().setBlock(this.pos.x, this.pos.y, this.brush);
+                    world.getUniverse().setBlock(this.pos.x, this.pos.y, 
+                            universe.nav.blockBrush());
                 }
             }
         };
     
     /**
      * The main game loop. Called dt/1000 times a second.
-     * 
      * @param {Universe} world The entire universe
      */
     universe.update = function(world){
-        this.nav.update(world, this.wizard);
         this.wizard.update(world);
     };
     
@@ -348,78 +345,103 @@ function LevelCreator(){
  */
 function LevelCreatorNav () {
     
-    var buttons = [];
+    var dialogs = [];
     
-    var tools = [];
-    
-    /** Block selector variables */
-    var rowLength = 10;
-    
-    var tileSize = 0;
+    this.blockBrush = function () {
+        return dialogs[0].selection;
+    };
     
     this.init = function (world, graphics) {
+        dialogs[0] = new Dialog('block_palette');
+        dialogs[0].content = BlockPalette;
         
-        var level = world.getUniverse();
-        var terrain = level.sprite_index;
-        tileSize = level.tileSize;
+        dialogs[1] = new Dialog('unit_palette');
+        dialogs[1].content = UnitPalette;
         
-        // creates buttons for every terrain sprite
-        for (var i = 0; i < terrain.length; i++) {
-            var sprite = terrain[i].sprite;
-            var converted_image = document.createElement("canvas");
-            converted_image.width = sprite.w;
-            converted_image.height = sprite.h;
-            converted_image.getContext("2d").drawImage(world.get(level.terrain_sprite),
-                sprite.x * tileSize, sprite.y * tileSize, sprite.w, sprite.h, 
-                0, 0, sprite.w, sprite.h);
-            buttons.push(new Button(converted_image, 
-                (i % rowLength) * (tileSize + 1) + 1, 
-                -Math.floor(i / rowLength) * (tileSize + 1) - 1, 
-                tileSize, tileSize, "bottom", "left", i));
+        dialogs[2] = new Dialog('selection_tools');
+        dialogs[2].content = function(){};
+        
+        dialogs[3] = new Dialog('size_alert');
+        if (document.body.clientHeight >= 600 && 
+                document.body.clientWidth >= 800) { 
+            dialogs[3].hide();
         }
+        
+        this.initAllDialogs(world, graphics);
     };
     
-    this.update = function (world, wiz) {
-        for (var i = 0; i < buttons.length; i++) {
-            var u = buttons[i].update(world);
-            if (typeof u === "number" ) {
-               wiz.brush = u;
-            }
-        }
-    };
-    
-    this.print = function (world, c) {
-        this.printBlockSelector(world, c);
-    };
-    
-    this.printBlockSelector = function (world, c) {
-        var cam = world.getCamera();
-        
-        var menuHeight = 48;
-        
-        c.fillStyle = "#577f63";
-        c.fillRect(0, cam.canvasHeight - (menuHeight + 2), cam.canvasWidth, 1);
-        c.fillStyle = "#bfd8bd";
-        c.fillRect(0, cam.canvasHeight - (menuHeight + 1), 
-                cam.canvasWidth, menuHeight + 2);
-        
-        c.fillStyle = "#77bfa3";
-        c.fillRect(0, cam.canvasHeight - (menuHeight + 1), 
-                rowLength * (tileSize + 1) + 1, menuHeight + 1);
-        c.fillStyle = "#577f63";
-        c.fillRect(rowLength * (tileSize + 1) + 1, 
-                cam.canvasHeight - (menuHeight + 1), 1, menuHeight + 1);
-        
-        for (var i = 0; i < buttons.length; i++) {
-            buttons[i].graphics.print(world, c);
+    this.initAllDialogs = function (world, graphics) {
+        for (var i = 0; i < dialogs.length; i++) {
+            dialogs[i].init(world, graphics);
         }
     };
 }
-;function PaletteGraphics (){
-    
-    /** Array of palette selection */
-    var selection = []; 
-    
-    /** */
-}
+;/**
+ * The content of a block palette
+ * @param {World} world The entire universe
+ */
+function BlockPalette (world){
+    var level = world.getUniverse();
+    var terrain = level.sprite_index;
+    var tileSize = level.tileSize;
 
+    // creates buttons for every terrain sprite
+    for (var i = 0; i < terrain.length; i++) {
+        var sprite = terrain[i].sprite;
+        var converted_image = document.createElement("canvas");
+        converted_image.width = sprite.w;
+        converted_image.height = sprite.h;
+        converted_image.getContext("2d").drawImage(world.get(level.terrain_sprite),
+            sprite.x * tileSize, sprite.y * tileSize, sprite.w, sprite.h, 
+            0, 0, sprite.w, sprite.h);
+
+        var thi = this;
+        this.buttons[i] = document.createElement('div');
+        this.buttons[i].appendChild(converted_image);
+        this.buttons[i].joResBlockIndex = i;
+        this.buttons[i].onclick = function (event) {
+            thi.selection = this.joResBlockIndex;
+        };
+        document.getElementById("block_palette").children[1].appendChild(this.buttons[i]);
+    }
+}
+;/**
+ * The content of a unit palette
+ * @param {World} world The entire universe
+ */
+function UnitPalette (world){
+    var units = world.getUniverse().unit_index;
+    
+    // creates buttons for every unit
+    for (var i = 0; i < units.length; i++) {
+        var unit;
+        if (typeof units[i] === "function") {
+            unit = units[i]();
+        } else if (typeof units[i] === "object") {
+            unit = Object.assign(units[i]);
+        }
+        
+        if (typeof unit.move !== "function") {
+            unit.move = BasicAI[unit.move];
+        }
+        
+        unit = Object.assign(new Unit(i, 0, 0), unit);
+        var sprite = unit.sprite(world.getClock());
+        
+        var converted_image = document.createElement("canvas");
+        converted_image.width = sprite.w;
+        converted_image.height = sprite.h;
+        converted_image.getContext("2d").drawImage(world.get(unit.imgPath),
+            sprite.x, sprite.y, sprite.w, sprite.h, 
+            0, 0, sprite.w, sprite.h);
+
+        var thi = this;
+        this.buttons[i] = document.createElement('div');
+        this.buttons[i].appendChild(converted_image);
+        this.buttons[i].joResBlockIndex = i;
+        this.buttons[i].onclick = function (event) {
+            thi.selection = this.joResBlockIndex;
+        };
+        document.getElementById("unit_palette").children[1].appendChild(this.buttons[i]);
+    }
+}

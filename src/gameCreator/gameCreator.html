@@ -17,9 +17,9 @@
                     <div class="menu_list_spacer"></div>
                     <div id="button_1" class="menu_list_item">Export</div>
                     <div class="menu_list_spacer"></div>
-                    <div id="button_1" class="menu_list_item">Import</div>
+                    <div id="button_2" class="menu_list_item">Import</div>
                     <div class="menu_list_spacer"></div>
-                    <div id="button_1" class="menu_list_item">Test</div>
+                    <div id="button_3" class="menu_list_item">Test</div>
                     <div class="menu_list_spacer"></div>
                 </div>
             </div>
@@ -60,9 +60,7 @@
                     <div class="window_close">x</div>
                     <div class="window_title">Block Palette</div>
                 </div>
-                <div class="window_content">
-                    <canvas id="block_palette_canvas" width="250" height="300"></canvas>
-                </div>
+                <div class="window_content"></div>
             </div>
             <div id="unit_palette" class="window">
                 <div class="window_menu">
@@ -70,7 +68,6 @@
                     <div class="window_title">Unit Palette</div>
                 </div>
                 <div class="window_content">
-                    <canvas id="units_palette_canvas" width="250" height="300"></canvas>
                 </div>
             </div>
             <div id="selection_tools" class="window">
@@ -79,7 +76,6 @@
                     <div class="window_title">Tools</div>
                 </div>
                 <div class="window_content">
-                    <canvas id="tools_canvas" width="100" height="300"></canvas>
                 </div>
             </div>
             <div id="size_alert" class="window">
@@ -103,9 +99,6 @@
                 _.setLevelPath('rsc/SampleLevel*.js');
                 _.setImgPath('rsc/img/*.png');
                 _.start();
-                
-                //This needs to be integrated into LevelCreatorHUD.js
-                initWindows();
             });
         </script>
     </body>
