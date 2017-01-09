@@ -24,7 +24,12 @@ function UnitPalette (world){
         var converted_image = document.createElement("canvas");
         converted_image.width = 24;
         converted_image.height = 24;
-        converted_image.getContext("2d").drawImage(world.get(unit.imgPath),
+        var graphics = converted_image.getContext("2d");
+        graphics.mozImageSmoothingEnabled = false;
+        graphics.webkitImageSmoothingEnabled = false;
+        graphics.msImageSmoothingEnabled = false;
+        graphics.imageSmoothingEnabled = false;
+        graphics.drawImage(world.get(unit.imgPath),
             sprite.x, sprite.y, sprite.w, sprite.h, 
             0, 0, converted_image.width, converted_image.height);
 

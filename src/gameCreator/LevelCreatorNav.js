@@ -20,8 +20,8 @@ function LevelCreatorNav () {
         dialogs[2].content = function(){};
         
         
-        if (document.body.clientHeight >= 600 && 
-                document.body.clientWidth >= 800) { 
+        if (document.body.clientHeight < 600 || 
+                document.body.clientWidth < 800) { 
             dialogs[3] = new Dialog('size_alert');
         }
         

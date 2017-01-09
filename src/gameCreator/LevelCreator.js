@@ -15,9 +15,12 @@ function LevelCreator(){
         world.getCamera().setScaleBounds(1.0, 2.0);
         world.getCamera().setTileSize(this.tileSize);
         
-        for (var i = 0; i < this.unit_data.length; i++) {
-            if (this.unit_data[i] > 0) { 
-                this.addUnit(this.unit_data[i] - 1, i * this.tileSize, i);
+        for (var i = 0; i < this.data.length; i++) {
+            for (var j = 0; j < this.data[i].unit.length; j++) {
+                var ud = this.data[i].unit[j];
+                this.addUnit(ud.type - 1, 
+                        (i * this.tileSize * this.sliceSize) + (ud.x * this.tileSize), 
+                        ud.y);
             }
         }
     };
