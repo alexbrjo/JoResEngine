@@ -1,6 +1,5 @@
 /** 
  * Handles all time calculations including delta time and iterations per second. 
- *
  * @author Alex Johnson
  */
  function Clock() {
@@ -23,7 +22,6 @@
     /**
      * Determines when to use delta_t. If the framerate is low then delta_t
      * shouldn't be used.
-     * 
      * @returns {Number} The number to be used as delta_t in game logic 
      *      calculations
      */

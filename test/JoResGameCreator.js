@@ -63,22 +63,35 @@ function DataGenerator (level) {
  * @param {String} html_id Id of the dialog element
  */
 function Dialog (html_id) {
+    
+    /** The HTML element */
     this.dialogElement = document.getElementById(html_id);
     this.dragbarElement = this.dialogElement.children[0];
     this.closeButtonElement = this.dragbarElement.children[0];
     
+    /** The bottom part  */
     this.content = function(){};
     
+    /** Array of buttons from the dialog */
     this.buttons = [];
     
+    /** The index of the button that is currently selected */
     this.selection = 0;
     
+    /** 
+     * Initializes the dialong content 
+     * @param {Universe} world The entire universe
+     * @param {RenderingContext2D} graphics The canvas graphics
+     */
     this.init = function (world, graphics) {
         this.content(world, graphics);
     };
     
     this.dialogElement.joResDragClick = { x: 0, y: 0, dragging: false };
     
+    /**
+     * Sets the mouse events for the dialog
+     */
     this.setMouseEvents = function () {
         
         var de = this.dialogElement;
@@ -102,8 +115,6 @@ function Dialog (html_id) {
             de.style.zindex = 1;
         };
 
-        
-
         this.closeButtonElement.onclick = function (event) {
             de.style.display = "none";
         };
@@ -111,18 +122,20 @@ function Dialog (html_id) {
     };
     this.setMouseEvents();
     
-    this.minimize = function () {
-        
-    };
+    /** Minimize and maximize to be implemented */
+    this.minimize = function () {};
+    this.maximize = function () {};
     
-    this.maximize = function () {
-        
-    };
-    
+    /**  
+     * Shows the dialog via style
+     */
     this.show = function () {
         this.dialogElement.style.display = "block";
     };
     
+    /**
+     * Hides the dialog via style
+     */
     this.hide = function () {
         this.dialogElement.style.display = "none";
     };
@@ -289,9 +302,14 @@ function LevelCreator(){
         world.getCamera().setScaleBounds(1.0, 2.0);
         world.getCamera().setTileSize(this.tileSize);
         
-        for (var i = 0; i < this.unit_data.length; i++) {
-            if (this.unit_data[i] > 0) { 
-                this.addUnit(this.unit_data[i] - 1, i * this.tileSize, i);
+        this.wizard.init(world);
+        
+        for (var i = 0; i < this.data.length; i++) {
+            for (var j = 0; j < this.data[i].unit.length; j++) {
+                var ud = this.data[i].unit[j];
+                this.addUnit(ud.type - 1, 
+                        (i * this.tileSize * this.sliceSize) + (ud.x * this.tileSize), 
+                        ud.y);
             }
         }
     };
@@ -301,6 +319,10 @@ function LevelCreator(){
             y: 0,
             pos : {x: 0, y:0},
             speed: 2,
+            init: function (world) {
+                this.x = world.getCamera().canvasWidth / 2;
+                this.y = world.getCamera().canvasHeight / 2;
+            },
             update: function (world) {
                 var ctrl = world.getController();
                 if (ctrl.a) this.x -= this.speed;
@@ -313,16 +335,6 @@ function LevelCreator(){
                     var cam = world.getCamera();
                     this.pos.x = Math.trunc((mouse.offsetX / 2 + cam.x) / world.getUniverse().tileSize);
                     this.pos.y = Math.trunc((mouse.offsetY / 2 + cam.y) / world.getUniverse().tileSize);
-                }
-                
-                if (ctrl.space) {
-                    var exportWindow = window.open();
-                    exportWindow.document.open();
-                    exportWindow.document.write( "<html>" +
-                            DataGenerator(world.getUniverse()) + "</html>"
-                    );
-                    exportWindow.document.close();
-                    ctrl.space = false; // forces space to be false
                 }
                 
                 if (ctrl.isDown) {
@@ -347,13 +359,44 @@ function LevelCreator(){
  */
 function LevelCreatorNav () {
     
+    /** Array og dialog windows */
     var dialogs = [];
+    
+    /** Reference to the world object */
+    var worldRef = null;
+    
+    /** Buttons that are a part of the navbar */
+    var buttons = [
+        function () { console.log("Not implemented"); },
+        function () {
+            var exportWindow = window.open();
+            exportWindow.document.open();
+            exportWindow.document.write( "<html>" +
+                    DataGenerator(worldRef.getUniverse()) + "</html>"
+            );
+            exportWindow.document.close();
+        },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { console.log("Not implemented"); },
+        function () { if (dialogs.length > 0) dialogs[0].show(); },
+        function () { if (dialogs.length > 1) dialogs[1].show(); },
+        function () { if (dialogs.length > 2) dialogs[2].show(); }
+    ];
     
     this.blockBrush = function () {
         return dialogs[0].selection;
     };
     
     this.init = function (world, graphics) {
+        
+        worldRef = world;
+        
         dialogs[0] = new Dialog('block_palette');
         dialogs[0].content = BlockPalette;
         
@@ -364,12 +407,19 @@ function LevelCreatorNav () {
         dialogs[2].content = function(){};
         
         
-        if (document.body.clientHeight >= 600 && 
-                document.body.clientWidth >= 800) { 
+        if (document.body.clientHeight < 600 || 
+                document.body.clientWidth < 800) { 
             dialogs[3] = new Dialog('size_alert');
         }
         
         this.initAllDialogs(world, graphics);
+        
+        var menuItem;
+        var i = 0;
+        while ((menuItem = document.getElementById("button_" + i)) !== null) {
+            if (i < buttons.length) menuItem.onclick = buttons[i];
+            i++;
+        }
     };
     
     this.initAllDialogs = function (world, graphics) {
@@ -394,7 +444,12 @@ function BlockPalette (world){
         var converted_image = document.createElement("canvas");
         converted_image.width = 24;
         converted_image.height = 24;
-        converted_image.getContext("2d").drawImage(world.get(level.terrain_sprite),
+        var graphics = converted_image.getContext("2d");
+        graphics.mozImageSmoothingEnabled = false;
+        graphics.webkitImageSmoothingEnabled = false;
+        graphics.msImageSmoothingEnabled = false;
+        graphics.imageSmoothingEnabled = false;
+        graphics.drawImage(world.get(level.terrain_sprite),
             sprite.x * tileSize, sprite.y * tileSize, sprite.w, sprite.h, 
             0, 0, converted_image.width, converted_image.height);
 
@@ -434,7 +489,12 @@ function UnitPalette (world){
         var converted_image = document.createElement("canvas");
         converted_image.width = 24;
         converted_image.height = 24;
-        converted_image.getContext("2d").drawImage(world.get(unit.imgPath),
+        var graphics = converted_image.getContext("2d");
+        graphics.mozImageSmoothingEnabled = false;
+        graphics.webkitImageSmoothingEnabled = false;
+        graphics.msImageSmoothingEnabled = false;
+        graphics.imageSmoothingEnabled = false;
+        graphics.drawImage(world.get(unit.imgPath),
             sprite.x, sprite.y, sprite.w, sprite.h, 
             0, 0, converted_image.width, converted_image.height);
 

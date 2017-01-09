@@ -15,6 +15,8 @@ function LevelCreator(){
         world.getCamera().setScaleBounds(1.0, 2.0);
         world.getCamera().setTileSize(this.tileSize);
         
+        this.wizard.init(world);
+        
         for (var i = 0; i < this.data.length; i++) {
             for (var j = 0; j < this.data[i].unit.length; j++) {
                 var ud = this.data[i].unit[j];
@@ -30,6 +32,10 @@ function LevelCreator(){
             y: 0,
             pos : {x: 0, y:0},
             speed: 2,
+            init: function (world) {
+                this.x = world.getCamera().canvasWidth / 2;
+                this.y = world.getCamera().canvasHeight / 2;
+            },
             update: function (world) {
                 var ctrl = world.getController();
                 if (ctrl.a) this.x -= this.speed;
@@ -42,16 +48,6 @@ function LevelCreator(){
                     var cam = world.getCamera();
                     this.pos.x = Math.trunc((mouse.offsetX / 2 + cam.x) / world.getUniverse().tileSize);
                     this.pos.y = Math.trunc((mouse.offsetY / 2 + cam.y) / world.getUniverse().tileSize);
-                }
-                
-                if (ctrl.space) {
-                    var exportWindow = window.open();
-                    exportWindow.document.open();
-                    exportWindow.document.write( "<html>" +
-                            DataGenerator(world.getUniverse()) + "</html>"
-                    );
-                    exportWindow.document.close();
-                    ctrl.space = false; // forces space to be false
                 }
                 
                 if (ctrl.isDown) {

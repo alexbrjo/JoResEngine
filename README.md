@@ -17,9 +17,16 @@ Try out the sample game
 2. Clone git repo and run grunt task 'build'
 3. Open ../sample/play.html
 
+Try out the GameCreator (early early dev.)
+-------------------------------------------
+1. Requires Grunt 0.4+ and a web browser that supports HTML5 canvas
+2. Clone git repo and run grunt task 'build'
+3. Copy rsc folder from ../sample to ../dist
+4. Open ../dist/gameCreator.html
+
 How it's done
 --------------------------
-1. Build JoResEngine.js and add the script to your webpage. 
+1. Build JoResEngine.js and add the script from ../dist to your webpage. 
     ```html
     <script type="text/javascript" src="JoResEngine.js"></script> 
     ```
@@ -49,7 +56,7 @@ How it's done
     joRes.start();
     ```
 
-Todo before Beta Release
+Todo before Release
 -------------------------
 1. Add audio modules 
     - music

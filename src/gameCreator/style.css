@@ -73,7 +73,7 @@ canvas {
     height: 3px;
 }
 
-.menu_list_item{
+.menu_list_item {
     background-color: rgba(255, 255, 255, 0.8);
     color: black;
     padding: 7px;
@@ -83,6 +83,14 @@ canvas {
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     cursor: pointer;
+}
+
+.menu_not {color: lightgrey;}
+
+.menu_not:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: lightgrey;
+    cursor: auto;
 }
 
 /* Window style */

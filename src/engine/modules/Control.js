@@ -122,8 +122,8 @@ function Control (canvas) {
      * @param {MouseEvent} mouseEvent The mouse event from the HTML document
      */
     this.setMouse = function (mouseEvent) {
-        window.onkeydown = function (keyEvent) { canvas.onkeydown(keyEvent); }
-        window.onkeyup = function (keyEvent) { canvas.onkeyup(keyEvent); }
+        window.onkeydown = function (keyEvent) { canvas.onkeydown(keyEvent); };
+        window.onkeyup = function (keyEvent) { canvas.onkeyup(keyEvent); };
         this.current = mouseEvent;
         this.isDown = mouseEvent.buttons > 0;
     };

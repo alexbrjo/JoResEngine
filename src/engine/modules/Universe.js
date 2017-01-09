@@ -22,7 +22,6 @@ function Universe(){
     this.unit_index = []; // not implemented
     this.sprite_index = []; // <BLock data> LARGE ARRAY HOLDS TERRAIN SPRITE INFO
     this.data = [[[]]]; // <Level data> VERY LARGE ARRAY HOLDS ALL BLOCKS
-    this.unit_data = []; // not implemented
     
     Object.assign(this, new JoResLevel());
     /********************************************/
@@ -41,7 +40,6 @@ function Universe(){
     
     /**
      * Gets the player object.
-     * 
      * @returns {Player} the player object
      * @throws {Error} if the player DNE
      */
@@ -55,7 +53,6 @@ function Universe(){
     
     /**
      * Initalizes the Universe
-     * 
      * @param {Universe} world The getting of the world
      * @param {Graphics} graphics The core graphics object.
      */
@@ -70,9 +67,12 @@ function Universe(){
         world.getCamera().setScaleBounds(this.min_scale, this.max_scale);
         world.getCamera().setTileSize(this.tileSize);
         
-        for (var i = 0; i < this.unit_data.length; i++) {
-            if (this.unit_data[i] > 0) { 
-                this.addUnit(this.unit_data[i] - 1, i * this.tileSize, i);
+        for (var i = 0; i < this.data.length; i++) {
+            for (var j = 0; j < this.data[i].unit.length; j++) {
+                var ud = this.data[i].unit[j];
+                this.addUnit(ud.type - 1, 
+                        (i * this.tileSize * this.sliceSize) + (ud.x * this.tileSize), 
+                        ud.y);
             }
         }
         world.getCamera().setFocusObj(this.player());
@@ -80,10 +80,9 @@ function Universe(){
     
     /**
      * The main game loop. Called dt/1000 times a second.
-     * 
      * @param {World} world The getters for the Universe.
      */
-    this.update = function(world){
+    this.update = function (world) {
         if (this.units.length > 0) {
             var toDestroy = [];
             // move this.units and objects
@@ -106,7 +105,6 @@ function Universe(){
     
     /**
      * Prints the Universe
-     * 
      * @param {Unniverse} world The entire Universe
      * @param {RenderingContext2D} c The graphical context
      */
@@ -128,7 +126,6 @@ function Universe(){
 
     /**
      * Creates and adds a new Unit to the Unit array. 
-     * 
      * @param {Number} type The type of the unit
      * @param {Number} x The x coordinate to create the Unit.
      * @param {Number} y The y coordinate to create the Unit.
@@ -151,7 +148,6 @@ function Universe(){
     
     /**
      * Finds block data for valid coordinates
-     * 
      * @param {Number} x The x coordinate of the data
      * @param {Number} y The y coordinate of the data
      * @returns {number} Block data
@@ -160,31 +156,29 @@ function Universe(){
         if (x > this.w || x < 0 || y < 0 || y > this.h ||
                 typeof x === "undefined" || typeof y === "undefined")
             return 0;
-        return this.data[Math.floor(x / this.sliceSize)][x % this.sliceSize][y];
+        return this.data[Math.floor(x / this.sliceSize)].block[x % this.sliceSize][y];
     };
     
     /** 
      * Sets a block to a value if the coordinate is valid
-     * 
      * @param {Number} x The x coordinate of the data
      * @param {Number} y The y coordinate of the data
      * @param {Number} n The value to set the block to
      * @returns {Boolean} if the coordinate was valid and block data was set
      */
     this.setBlock = function (x, y, n) {
-        if (x > this.w || x < 0 || y < 0 || y > this.h) {
+        var slice = Math.floor(x / this.sliceSize);
+        if (x > this.w || x < 0 || y < 0 || y > this.h || slice >= this.data.length) {
             return false;
         } else {
-            var slice = Math.floor(x / this.sliceSize);
             alter[slice] = true;
-            this.data[slice][x % this.sliceSize][y] = n;
+            this.data[slice].block[x % this.sliceSize][y] = n;
             return true;
         }
     };
     
     /** 
      * Generates basic AABB object for a block
-     * 
      * @param {Number} i The x coordinate of the block
      * @param {Number} j The y coordinate of the block
      * @returns {Object} with location of image on sprite sheet, position of
